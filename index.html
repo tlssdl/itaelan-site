@@ -1,10 +1,60 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>itaelan.cloud</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiny Garden</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Hello itaelan.cloud</h1>
+  <main class="app">
+    <section class="card">
+      <div class="sky" id="sky">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="sun">☀️</div>
+        <div class="butterfly butterfly-1">🦋</div>
+        <div class="butterfly butterfly-2">🦋</div>
+      </div>
+
+      <section class="garden">
+        <p class="tiny-label">itaelan tiny garden</p>
+        <h1>오늘의 작은 정원</h1>
+        <p class="message" id="message">잠깐 쉬어가도 괜찮아.</p>
+
+        <div class="plant-area" id="plantArea">
+          <div class="sparkles" id="sparkles"></div>
+          <div class="plant" id="plant">🌱</div>
+          <div class="pot">🪴</div>
+          <div class="cat" id="cat">🐈</div>
+        </div>
+
+        <div class="status">
+          <div>
+            <span>성장</span>
+            <strong id="growthText">새싹</strong>
+          </div>
+          <div>
+            <span>기분</span>
+            <strong id="moodText">말랑</strong>
+          </div>
+          <div>
+            <span>방문</span>
+            <strong id="visitText">1일째</strong>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="waterBtn">💧 물 주기</button>
+          <button id="sunBtn">🌤️ 햇빛 주기</button>
+          <button id="catBtn">🐾 고양이 부르기</button>
+        </div>
+
+        <button class="reset" id="resetBtn">정원 다시 시작하기</button>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
