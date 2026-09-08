@@ -11,3 +11,38 @@ main{margin-left:230px}.topbar{height:74px;background:white;border-bottom:1px so
 @media(max-width:680px){.sidebar{padding:15px 16px;gap:11px}.brand{font-size:18px;gap:7px}.brand small{letter-spacing:.8px;font-size:7px}.brand img{width:28px;height:28px}.sidebar nav{gap:0}.nav-item{padding:8px 7px;font-size:12px}.storage-note{font-size:11px}.backup-actions{gap:12px}.topbar{padding:0 18px;font-size:11px;height:49px}.topbar b{margin:0 8px}.workspace{padding:25px 16px}.page-heading{gap:10px;margin-bottom:22px}h1{font-size:27px;letter-spacing:-1px}.eyebrow{font-size:10px}.subtitle{font-size:13px}.page-heading .button{font-size:13px;padding:10px 12px}.quick-panel{padding:19px 17px}.quick-panel form{flex-wrap:wrap;gap:10px}.quick-panel #quick-title-input{flex-basis:100%;padding:12px;font-size:14px}.quick-date{flex:1}.quick-date>span{display:inline;font-size:11px}.quick-date input{max-width:155px;flex:1;font-size:13px;padding:10px 7px}.quick-panel form>.button{font-size:13px;padding:10px 13px}.field-help{font-size:11px}.week-select{gap:5px;flex-wrap:wrap}.week-select h2{font-size:16px}.week-toolbar{gap:5px}.button.small{font-size:11px;padding:6px}.text-button{font-size:11px;padding:3px}.day-strip{gap:5px;margin-bottom:19px}.day{padding:12px 3px;border-radius:8px}.day .day-number{font-size:19px}.day .weekday{font-size:11px}.day .day-count{font-size:10px}.plan-layout{display:flex;flex-direction:column}.plan-panel,.overview{width:100%}.overview{order:-1;display:grid;grid-template-columns:1fr 1fr;column-gap:25px;padding:18px 20px}.overview-heading{grid-column:1}.progress-value{grid-column:1;margin:12px 0}.progress-value strong{font-size:37px}.progress-track,.overview>.muted{grid-column:1}.overview .eyebrow,.document-tip{display:none}#status-summary{grid-column:2;grid-row:1/5;border:0;padding:0;margin:0;align-self:center}.status-stat{font-size:12px;margin-bottom:9px}.status-stat:last-child{margin:0}.panel-heading{padding:20px 18px 14px}.panel-heading h2{font-size:16px}.list-toolbar{padding:0 18px 17px;gap:8px}.list-toolbar select{font-size:13px;max-width:110px}.search-box input{font-size:13px}.task-row{padding:19px 18px;gap:11px}.task-title{font-size:15px}.status-badge{font-size:11px}.task-action{font-size:13px}.date-heading{padding:11px 18px}.empty-plan{padding:31px 20px}.empty-plan h3{font-size:16px}.empty-plan p{font-size:13px}footer{font-size:10px}.form-grid{gap:10px}.dialog-actions{flex-wrap:wrap}.dialog-actions .button{font-size:13px}dialog{padding:22px}.danger-button{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 .plan-layout.single-column { grid-template-columns: 1fr; }
+#calendar-panel { margin-bottom: 28px; }
+.calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin: 10px 0 22px; }
+.month-navigation { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.month-navigation h2 { font-size: 26px; letter-spacing: -.7px; min-width: 160px; text-align: center; }
+#month-jump { border: 1px solid #dce4f1; border-radius: 8px; padding: 7px 9px; font-size: 13px; color: #72839e; background: white; }
+.calendar-scroll { border: 1px solid #dce4f1; border-radius: 14px; background: white; overflow-x: auto; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); min-width: 700px; border-bottom: 1px solid #e2e8f2; background: #f9fbff; }
+.calendar-weekdays span { padding: 15px 17px; color: #8796ae; font-size: 13px; font-weight: 600; }
+.calendar-weekdays span:last-child { color: #c17b86; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); min-width: 700px; }
+.calendar-cell { min-height: 156px; border-right: 1px solid #e9edf5; border-bottom: 1px solid #e9edf5; padding: 10px 8px 7px; display: flex; flex-direction: column; min-width: 0; }
+.calendar-cell:nth-child(7n) { border-right: 0; }
+.calendar-cell.outside { background: #fafbfd; }
+.calendar-cell.outside .calendar-date { color: #b5bfce; }
+.calendar-cell.today-cell { background: #f7f9ff; }
+.calendar-cell.selected-cell { box-shadow: inset 0 0 0 2px #9aaeed; }
+.calendar-cell-heading { display: flex; align-items: center; gap: 6px; padding: 0 4px 7px; }
+.calendar-date { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; font-size: 14px; font-weight: 600; }
+.calendar-date:hover { background: #e9efff; }
+.sunday .calendar-date { color: #bb7180; }
+.today-cell .calendar-date { background: var(--blue); color: white; }
+.today-label { color: #6c87d9; font-size: 11px; }
+.calendar-event { display: flex; align-items: baseline; gap: 6px; width: 100%; text-align: left; padding: 6px 7px; margin: 0 0 5px; background: #eef3ff; border-left: 3px solid #6b89e7; border-radius: 5px; color: #496695; min-width: 0; }
+.calendar-event:hover { background: #dfe9ff; }
+.event-time { font-size: 11px; white-space: nowrap; }
+.event-title { font-size: 13px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-event.completed { opacity: .55; background: #f0f3f7; border-color: #a9b6ca; }
+.calendar-event.completed .event-title { text-decoration: line-through; }
+.calendar-more { text-align: left; font-size: 12px; color: #7c8ba6; padding: 3px 8px; }
+.calendar-add { text-align: center; width: 100%; min-height: 27px; margin-top: auto; color: #aebbd1; font-size: 17px; border-radius: 6px; }
+.calendar-add:hover { color: var(--blue); background: #edf2ff; }
+.calendar-foot { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin: 12px 2px 0; color: #8998ac; font-size: 12px; }
+@media(min-width:1400px) { .calendar-cell { min-height: 178px; } }
+@media(max-width:900px) { .sidebar nav { flex-wrap: wrap; } .nav-item { padding: 8px; } }
+@media(max-width:680px) { .sidebar { grid-template-columns: 1fr; } .sidebar nav { justify-content: flex-start; } .sidebar-bottom { grid-column: 1; } .calendar-toolbar { margin-bottom: 16px; } .month-navigation { gap: 6px; } .month-navigation h2 { font-size: 22px; min-width: 125px; } #month-jump { font-size: 12px; padding: 6px; } .calendar-cell { min-height: 137px; } .calendar-foot { flex-wrap: wrap; font-size: 11px; } }
