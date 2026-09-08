@@ -1,6 +1,6 @@
 import {STATUSES,emptyState,weekKey,shiftWeek,flatten,itemState,STORAGE_KEY,normalizeState,dateKey,safeURL,setItem,togglePlan,mergeState} from './state.js';
 const $=s=>document.querySelector(s);
-const base=flatten(window.ROADMAP_DATA.root),baseIds=base.map(n=>n.id);
+const base=flatten(window.ROADMAP_DATA.root),baseIds=base.map(n=>n.id),aliases=window.ROADMAP_DATA.aliases||{};
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state=emptyState(),selectedWeek=weekKey(),category='all',editingId=null,pendingImport=null,toastTimer,originalRaw='',blocked=false;
 const monthDay=key=>new Date(key+'T12:00:00').toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'});
@@ -9,7 +9,7 @@ function allNodes(){return [...base,...state.custom.map(c=>({...c,path:[window.R
 function findNode(id){return allNodes().find(n=>n.id===id);}
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),3000);}
 function storageError(message){$('#storage-error').textContent=message;$('#storage-error').hidden=false;}
-try{originalRaw=localStorage.getItem(STORAGE_KEY)||'';if(originalRaw)state=normalizeState(JSON.parse(originalRaw),baseIds);}catch{blocked=true;storageError('저장된 계획을 읽을 수 없어요. 먼저 ‘백업 저장’으로 원본을 보관한 뒤 정상 백업을 불러오거나 브라우저 저장 설정을 확인해주세요.');}
+try{originalRaw=localStorage.getItem(STORAGE_KEY)||'';if(originalRaw)state=normalizeState(JSON.parse(originalRaw),baseIds,aliases);}catch{blocked=true;storageError('저장된 계획을 읽을 수 없어요. 먼저 ‘백업 저장’으로 원본을 보관한 뒤 정상 백업을 불러오거나 브라우저 저장 설정을 확인해주세요.');}
 function commit(next,{recover=false}={}) {
   if(blocked&&!recover){toast('저장 문제를 먼저 해결해주세요. 원본은 백업 저장으로 보관할 수 있어요.');return false;}
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{storageError('저장하지 못했어요. 저장 공간이나 브라우저 설정을 확인해주세요. 현재 계획은 ‘백업 저장’으로 보관할 수 있어요.');return false;}
@@ -61,7 +61,11 @@ function render(){
   renderWeekly();renderRoadmap();
   if(focusAttribute&&focusRegion){const replacement=document.querySelector(`#${focusRegion} [${focusAttribute}="${CSS.escape(focusValue)}"]`);replacement?.focus({preventScroll:true});}
 }
-function openEditor(id){const n=findNode(id);if(!n)return;editingId=id;const v=itemState(state,id);$('#editor-title').textContent=n.title;$('#editor-path').textContent=n.path.slice(1,-1).join(' › ');$('#edit-status').value=v.status;$('#edit-action').value=v.action;$('#edit-document').value=v.document;$('#edit-url').value=v.url;$('#edit-due').value=v.due;$('#edit-planned').checked=(state.weeks[selectedWeek]||[]).includes(id);$('#edit-week-label').textContent=`${monthDay(selectedWeek)} — ${monthDay(weekEnd(selectedWeek))} 계획에 담기`;$('#edit-error').textContent='';$('#editor').showModal();}
+function openEditor(id){const n=findNode(id);if(!n)return;editingId=id;const v=itemState(state,id);$('#editor-title').textContent=n.title;$('#editor-path').textContent=n.path.slice(1,-1).join(' › ');$('#edit-status').value=v.status;$('#edit-action').value=v.action;$('#edit-document').value=v.document;$('#edit-url').value=v.url;$('#edit-due').value=v.due;$('#edit-planned').checked=(state.weeks[selectedWeek]||[]).includes(id);$('#edit-week-label').textContent=`${monthDay(selectedWeek)} — ${monthDay(weekEnd(selectedWeek))} 계획에 담기`;$('#edit-error').textContent='';
+  const prior=Object.entries(state.archive||{}).filter(([oldId])=>aliases[oldId]===id);
+  $('#legacy-records').hidden=!prior.length;
+  $('#legacy-content').innerHTML=prior.map(([oldId,r])=>'<article class="legacy-record"><strong>'+escape(window.ROADMAP_DATA.legacyLabels?.[oldId]||oldId)+'</strong><p>'+STATUSES[r.status]+'</p>'+(r.action?'<p>'+escape(r.action)+'</p>':'')+(r.document?'<p>문서: '+escape(r.document)+'</p>':'')+(r.url?'<a class="inline-link" href="'+escape(safeURL(r.url))+'" target="_blank" rel="noopener noreferrer">이전 문서 열기 ↗</a>':'')+(r.due?'<p>목표 날짜: '+escape(r.due)+'</p>':'')+'</article>').join('');
+  $('#editor').showModal();}
 function openNew(){$('#new-form').reset();$('#new-item').showModal();}
 $('#editor-form').addEventListener('submit',e=>{
   e.preventDefault();const url=$('#edit-url').value.trim();if(url&&!safeURL(url)){$('#edit-error').textContent='http:// 또는 https:// 문서 링크를 입력해주세요.';return;}
@@ -89,9 +93,9 @@ document.addEventListener('click',async e=>{
 function exportBackup(){const raw=blocked&&originalRaw?originalRaw:JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),blob=new Blob([raw],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`itaelan-study-${dateKey(new Date())}${blocked?'-original':''}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('백업 파일을 저장했어요.');}
 $('#export-btn').addEventListener('click',exportBackup);$('#before-import-export').addEventListener('click',exportBackup);
 $('#import-btn').addEventListener('click',()=>$('#import-file').click());
-$('#import-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>5*1024*1024)throw new Error('5MB 이하의 학습 계획 백업 파일을 선택해주세요.');pendingImport=normalizeState(JSON.parse(await f.text()),baseIds);$('#import-description').textContent=`기록 ${Object.keys(pendingImport.items).length}개, 주간 계획 ${Object.keys(pendingImport.weeks).length}개, 개인 항목 ${pendingImport.custom.length}개를 불러옵니다.`;$('#import-dialog').showModal();}catch(error){toast(error instanceof SyntaxError?'JSON 백업 파일을 읽을 수 없어요.':error.message);}finally{e.target.value='';}});
+$('#import-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>5*1024*1024)throw new Error('5MB 이하의 학습 계획 백업 파일을 선택해주세요.');pendingImport=normalizeState(JSON.parse(await f.text()),baseIds,aliases);$('#import-description').textContent=`기록 ${Object.keys(pendingImport.items).length}개, 주간 계획 ${Object.keys(pendingImport.weeks).length}개, 개인 항목 ${pendingImport.custom.length}개를 불러옵니다.`;$('#import-dialog').showModal();}catch(error){toast(error instanceof SyntaxError?'JSON 백업 파일을 읽을 수 없어요.':error.message);}finally{e.target.value='';}});
 $('#confirm-import').addEventListener('click',()=>{if(!pendingImport)return;const merged=mergeState(state,pendingImport);if(commit(merged,{recover:true})){$('#import-dialog').close();pendingImport=null;toast('백업을 현재 계획과 합쳤어요.');}});
-window.addEventListener('storage',e=>{if(e.key!==STORAGE_KEY)return;try{state=e.newValue?normalizeState(JSON.parse(e.newValue),baseIds):emptyState();blocked=false;$('#storage-error').hidden=true;render();toast($('#editor').open?'다른 탭의 변경을 반영했어요. 열린 편집 내용은 저장할 때 적용돼요.':'다른 탭의 변경을 반영했어요.');}catch{toast('다른 탭에서 변경한 데이터를 읽지 못했어요.');}});
+window.addEventListener('storage',e=>{if(e.key!==STORAGE_KEY)return;try{state=e.newValue?normalizeState(JSON.parse(e.newValue),baseIds,aliases):emptyState();blocked=false;$('#storage-error').hidden=true;render();toast($('#editor').open?'다른 탭의 변경을 반영했어요. 열린 편집 내용은 저장할 때 적용돼요.':'다른 탭의 변경을 반영했어요.');}catch{toast('다른 탭에서 변경한 데이터를 읽지 못했어요.');}});
 function activeNav(){document.querySelectorAll('.nav-item[href^="#"]').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===(location.hash==='#roadmap'?'#roadmap':'#weekly')));$('.breadcrumb strong').textContent=location.hash==='#roadmap'?'전체 로드맵':'주간 계획';}
 window.addEventListener('hashchange',activeNav);
 $('.sidebar-bottom').classList.add('mobile-storage');

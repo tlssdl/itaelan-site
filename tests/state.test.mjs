@@ -41,10 +41,29 @@ test('Merge retains existing plans while updating matching records from backup',
   assert.equal(merged.items.dhcp.status,'done');assert.equal(merged.items.dns.status,'review');
   assert.deepEqual(merged.weeks['2026-09-07'],['dns','dhcp']);assert.deepEqual(merged.weeks['2026-09-14'],['dns']);
 });
-test('Full original roadmap retains stable unique IDs and category paths',async()=>{
+test('Concept roadmap keeps unique IDs, removes OS branches and maps every original item',async()=>{
   const context={window:{}};vm.runInNewContext(await readFile(new URL('../roadmap-data.js',import.meta.url),'utf8'),context);
   const root=context.window.ROADMAP_DATA.root,nodes=flatten(root);
   assert.equal(nodes.length,context.window.ROADMAP_DATA.total);assert.equal(new Set(nodes.map(n=>n.id)).size,nodes.length);
   assert.deepEqual(Array.from(root.children,n=>n.title),['네트워크 구성','서비스','보안']);
   assert.ok(nodes.some(n=>n.title==='OSPF'));assert.ok(nodes.some(n=>n.title==='DHCP'));assert.ok(nodes.some(n=>n.title==='Auth-Proxy'));
+  const ids=new Set(nodes.map(n=>n.id)),aliases=context.window.ROADMAP_DATA.aliases;
+  assert.equal(nodes.length,164);assert.equal(nodes.length+Object.keys(aliases).length,233);
+  assert.ok(nodes.every(n=>!/Debian|Window|Cisco Router|IIS|Apache2|Nginix/.test(n.title)));
+  for(const [oldId,target] of Object.entries(aliases)){assert.ok(!ids.has(oldId));assert.ok(ids.has(target));}
+  const ca=nodes.find(n=>n.title==='인증서 · PKI');assert.deepEqual(Array.from(ca.children,n=>n.title),['Root CA','Sub CA']);
+});
+test('Old OS-specific records migrate without losing separate documents or plans',()=>{
+  const raw={version:1,items:{win:{status:'done',action:'Windows action',document:'C:/DHCP.docx'},deb:{status:'review',action:'Debian action',url:'https://www.notion.so/debian'}},weeks:{'2026-09-07':['win','deb'],'2026-09-14':['deb']},custom:[]};
+  const aliases={win:'dhcp',deb:'dhcp'},migrated=normalizeState(raw,['dhcp'],aliases);
+  assert.deepEqual(migrated.weeks,{'2026-09-07':['dhcp'],'2026-09-14':['dhcp']});
+  assert.equal(migrated.items.dhcp.status,'review');
+  assert.equal(migrated.items.dhcp.document,'C:/DHCP.docx');assert.equal(migrated.items.dhcp.url,'');
+  assert.equal(migrated.archive.win.action,'Windows action');assert.equal(migrated.archive.deb.url,'https://www.notion.so/debian');
+  assert.deepEqual(normalizeState(JSON.parse(JSON.stringify(migrated)),['dhcp'],aliases),migrated);
+  assert.deepEqual(mergeState(emptyState(),migrated).archive,migrated.archive);
+});
+test('An incomplete legacy branch does not turn a merged concept into completed',()=>{
+  const raw={version:1,items:{win:{status:'done'},deb:{status:'todo'}},weeks:{},custom:[]};
+  assert.equal(normalizeState(raw,['dns'],{win:'dns',deb:'dns'}).items.dns.status,'studying');
 });
