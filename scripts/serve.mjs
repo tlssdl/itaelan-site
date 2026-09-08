@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-const allowed = ['index.html','style.css','script.js','state.js','roadmap-data.js','icon.svg'];
+const allowed = ['index.html','style.css','script.js','planner-state.js','legacy-migration.js','legacy-state.js','legacy-catalog.js','icon.svg'];
 const types = {html:'text/html; charset=utf-8',css:'text/css; charset=utf-8',js:'text/javascript; charset=utf-8',svg:'image/svg+xml'};
 createServer(async(req,res)=>{
   const file = new URL(req.url,'http://localhost').pathname.slice(1) || 'index.html';
