@@ -3,58 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tiny Garden</title>
+  <meta name="theme-color" content="#204be0" />
+  <meta name="description" content="IT태란의 네트워크·시스템 학습 계획. 로드맵에서 이번 주 공부를 고르고 진도와 다음 할 일을 관리하세요." />
+  <title>IT태란 · 학습 플래너</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="app">
-    <section class="card">
-      <div class="sky" id="sky">
-        <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2"></div>
-        <div class="sun">☀️</div>
-        <div class="butterfly butterfly-1">🦋</div>
-        <div class="butterfly butterfly-2">🦋</div>
-      </div>
-
-      <section class="garden">
-        <p class="tiny-label">itaelan tiny garden</p>
-        <h1>오늘의 작은 정원</h1>
-        <p class="message" id="message">잠깐 쉬어가도 괜찮아.</p>
-
-        <div class="plant-area" id="plantArea">
-          <div class="sparkles" id="sparkles"></div>
-          <div class="plant" id="plant">🌱</div>
-          <div class="pot">🪴</div>
-          <div class="cat" id="cat">🐈</div>
-        </div>
-
-        <div class="status">
-          <div>
-            <span>성장</span>
-            <strong id="growthText">새싹</strong>
-          </div>
-          <div>
-            <span>기분</span>
-            <strong id="moodText">말랑</strong>
-          </div>
-          <div>
-            <span>방문</span>
-            <strong id="visitText">1일째</strong>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="waterBtn">💧 물 주기</button>
-          <button id="sunBtn">🌤️ 햇빛 주기</button>
-          <button id="catBtn">🐾 고양이 부르기</button>
-        </div>
-
-        <button class="reset" id="resetBtn">정원 다시 시작하기</button>
-      </section>
+<a class="skip" href="#main">본문으로 이동</a>
+<aside class="sidebar">
+  <a class="brand" href="#main"><img src="icon.svg" width="36" height="36" alt="" /><span>IT태란<small>STUDY PLANNER</small></span></a>
+  <p class="nav-label">나의 학습 공간</p>
+  <nav aria-label="주요 메뉴"><a class="nav-item active" href="#weekly"><span aria-hidden="true">▦</span> 주간 계획</a><a class="nav-item" href="#roadmap"><span aria-hidden="true">⌘</span> 전체 로드맵</a><a class="nav-item" href="https://wiki.itaelan.cloud" target="_blank" rel="noopener"><span aria-hidden="true">↗</span> 기존 위키</a></nav>
+  <div class="sidebar-bottom"><div class="storage-note"><span class="dot"></span> 이 브라우저에 자동 저장<p>다른 기기로 옮길 땐 백업 파일을 사용해요.</p></div><div class="backup-actions"><button id="export-btn" class="text-button">백업 저장 ↓</button><button id="import-btn" class="text-button">백업 불러오기 ↑</button></div><input type="file" id="import-file" accept=".json,application/json" hidden /><p class="sidebar-foot">IT NETWORK SYSTEM</p></div>
+</aside>
+<main id="main" tabindex="-1">
+  <header class="topbar"><div class="breadcrumb">나의 학습 공간 <span>/</span> <strong>주간 계획</strong></div><span id="today" class="today"></span></header>
+  <div class="workspace">
+    <section id="weekly" aria-labelledby="page-title">
+      <div class="section-heading"><div><p class="eyebrow">MY STUDY PLAN</p><h1 id="page-title">이번 주, 하나씩.</h1><p class="subtitle">할 일을 고르고, 다음에 이어 할 곳을 남겨두세요.</p></div><button id="new-btn" class="button primary">＋ 할 일 추가</button></div>
+      <div class="week-toolbar"><div class="week-select"><button class="icon-button" id="prev-week" aria-label="이전 주">←</button><h2 id="week-title"></h2><button class="icon-button" id="next-week" aria-label="다음 주">→</button><button id="this-week" class="button quiet small">이번 주</button></div><span id="week-caption" class="muted"></span></div>
+      <div class="plan-layout"><div class="plan-panel"><div class="panel-heading"><h3>이번 주 할 일 <span id="plan-count" class="count">0</span></h3><a class="inline-link" href="#roadmap">로드맵에서 고르기 ↗</a></div><div id="weekly-list"></div></div><aside class="overview" aria-label="학습 현황"><div class="overview-heading"><span>이번 주 진행</span><span class="tiny-label">PROGRESS</span></div><div class="progress-value"><strong id="week-percent">0</strong><span>%</span></div><div id="week-progress" class="progress-track" role="progressbar" aria-label="이번 주 완료율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><p id="week-summary" class="muted">계획을 선택해 시작하세요.</p><div class="overview-divider"></div><div id="status-summary"></div><div class="document-tip"><span aria-hidden="true">↗</span><div><strong>정리는 Word에서</strong><p>할 일에 파일명이나 문서 링크를 남겨두면 다시 찾기 쉬워요.</p></div></div></aside></div>
+      <div class="continuing-heading"><h3>이어서 공부하기</h3><span class="muted">이번 주에 담지 않은 공부 중·복습 항목</span></div><div id="continuing-list" class="continuing-list"></div>
     </section>
-  </main>
-
-  <script src="script.js"></script>
+    <section id="roadmap" aria-labelledby="roadmap-title"><div class="section-heading roadmap-heading"><div><p class="eyebrow">THE BIG PICTURE</p><h2 id="roadmap-title">전체 학습 로드맵</h2><p class="subtitle">필요한 항목을 골라 주간 계획에 담아보세요.</p></div><span id="total-progress" class="total-progress"></span></div><div class="roadmap-toolbar"><div class="category-tabs" role="group" aria-label="로드맵 분류"><button data-category="all" class="category-tab selected" aria-pressed="true">전체</button><button data-category="네트워크 구성" class="category-tab" aria-pressed="false">네트워크 구성</button><button data-category="서비스" class="category-tab" aria-pressed="false">서비스</button><button data-category="보안" class="category-tab" aria-pressed="false">보안</button><button data-category="개인 계획" class="category-tab" aria-pressed="false">개인 계획</button></div><div class="search-controls"><label class="search-box"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="항목, 다음 할 일, 문서 검색" aria-label="로드맵 검색" /></label><select id="status-filter" aria-label="학습 상태 필터"><option value="all">모든 상태</option><option value="todo">시작 전</option><option value="studying">공부 중</option><option value="review">복습 필요</option><option value="done">완료</option></select></div></div><p id="search-summary" class="search-summary" aria-live="polite"></p><div id="roadmap-tree"></div></section>
+    <footer>IT태란 학습 플래너 <span>계획은 여기에서 · 정리는 나의 문서에서</span></footer>
+  </div>
+</main>
+<dialog id="editor" aria-labelledby="editor-title"><form id="editor-form"><div class="dialog-heading"><p class="eyebrow">STUDY ITEM</p><button type="button" class="icon-button" data-close="editor" aria-label="닫기">×</button></div><p id="editor-path" class="muted"></p><h2 id="editor-title"></h2><label>학습 상태<select id="edit-status"><option value="todo">시작 전</option><option value="studying">공부 중</option><option value="review">복습 필요</option><option value="done">완료</option></select></label><label>다음 할 일<textarea id="edit-action" rows="3" maxlength="2000" placeholder="예: DHCP Relay 설정 후 IP 할당 결과 확인하기"></textarea></label><label>목표 날짜 <span class="optional">선택</span><input id="edit-due" type="date" /></label><div class="document-fields"><h3>관련 Word 문서</h3><label>파일명 또는 저장 위치<input id="edit-document" maxlength="1000" placeholder="예: Debian / DHCP.docx" /></label><label>문서 링크 <span class="optional">선택</span><input id="edit-url" type="url" placeholder="OneDrive 등의 https:// 문서 링크" maxlength="2000" /></label><p class="field-help">PC 파일은 위치를 복사해서 찾고, 웹 문서 링크는 바로 열 수 있어요. 파일을 업로드하지는 않아요.</p></div><label class="check-label"><input id="edit-planned" type="checkbox" /><span id="edit-week-label">선택한 주 계획에 담기</span></label><p id="edit-error" class="error" role="alert"></p><div class="dialog-actions"><button type="button" class="button" data-close="editor">취소</button><button type="submit" class="button primary">저장하기</button></div></form></dialog>
+<dialog id="new-item" aria-labelledby="new-title"><form id="new-form"><div class="dialog-heading"><p class="eyebrow">NEW PLAN</p><button type="button" class="icon-button" data-close="new-item" aria-label="닫기">×</button></div><h2 id="new-title">나만의 할 일 추가</h2><label>무엇을 공부할까요?<input id="new-name" required maxlength="120" placeholder="예: 이번 실습 Word 문서 정리" /></label><label>분류<select id="new-category"><option>개인 계획</option><option>네트워크 구성</option><option>서비스</option><option>보안</option></select></label><p class="field-help">추가하면 현재 보고 있는 주의 계획에 담겨요.</p><div class="dialog-actions"><button type="button" class="button" data-close="new-item">취소</button><button class="button primary" type="submit">추가하기</button></div></form></dialog>
+<dialog id="import-dialog" aria-labelledby="import-title"><div class="dialog-heading"><p class="eyebrow">RESTORE BACKUP</p><button class="icon-button" data-close="import-dialog" aria-label="닫기">×</button></div><h2 id="import-title">백업 불러오기</h2><p id="import-description"></p><p class="field-help">현재 계획과 합쳐요. 같은 항목의 상태·다음 할 일·문서 위치는 백업의 내용으로 갱신돼요. 불러오기 전에 현재 백업을 저장할 수 있어요.</p><div class="dialog-actions"><button id="before-import-export" class="button">현재 백업 저장</button><button id="confirm-import" class="button primary">합쳐서 불러오기</button></div></dialog>
+<div id="storage-error" class="storage-error" role="alert" hidden></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
+<noscript>학습 계획을 사용하려면 브라우저에서 JavaScript를 켜주세요.</noscript>
+<script src="roadmap-data.js"></script><script type="module" src="script.js"></script>
 </body>
 </html>
